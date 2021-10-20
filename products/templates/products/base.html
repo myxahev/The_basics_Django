@@ -4,7 +4,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -17,7 +16,6 @@
 
     <!-- Custom styles for this template -->
     {% block css %} {% endblock %}
-
 </head>
 
 <body>
@@ -38,7 +36,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="auth/profile.html">Валерий П.
+                        <a class="nav-link" href="{% url 'users:profile' %}"> {{ user.username }}
                             <i class="fas fa-user-circle"></i>
                         </a>
                     </li>
@@ -59,17 +57,16 @@
                 <li class="naev-item nav-link">
                     Текущая дата: {% now "D d M Y" %}
                 </li>
-
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Page Content -->
-{% block content %} {% endblock %}
+<!-- Content -->
+{% block content %}{% endblock %}
 
-<!-- Page Footer -->
-{% block footer %} {% endblock %}
+<!-- Footer -->
+{% block footer %}{% endblock %}
 
 <!-- Bootstrap core JavaScript -->
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
@@ -79,5 +76,4 @@
 <script src="{% static 'vendor/fontawesome/fontawesome-icons.js' %}" crossorigin="anonymous"></script>
 
 </body>
-
 </html>
