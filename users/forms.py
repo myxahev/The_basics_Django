@@ -31,7 +31,7 @@ class UserRegistrationForm(UserCreationForm):
         'class': 'form-control py-4', 'placeholder': 'Подтвердите пароль'}))
     middle_name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите отчество (если есть)'}))
-    age = forms.CharField(widget=forms.TextInput(attrs={
+    age = forms.CharField(widget=forms.NumberInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите возраст'}))
 
     class Meta:
