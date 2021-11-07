@@ -3,9 +3,9 @@
 {% block content %}
 <main>
     <div class="container-fluid">
-        <h1 class="mt-4">Редактирование продукта | {{ selected_product.name }}</h1>
+        <h1 class="mt-4">Редактирование категории | {{ productcategory.name }}</h1>
         <div class="card-body">
-            <form action="{% url 'admins:products_update' selected_product.id %}" method="post"
+            <form action="{% url 'admins:category_products_update' productcategory.id %}" method="post"
                   enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-row">
@@ -21,38 +21,7 @@
                             {{ form.description }}
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="small mb-1"
-                                   for="{{ form.price.id_for_label }}">Цена</label>
-                            {{ form.price }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="small mb-1"
-                                   for="{{ form.quantity.id_for_label }}">Количество</label>
-                            {{ form.quantity }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="small mb-1"
-                                   for="{{ form.category.id_for_label }}">Категория</label>
-                            {{ form.category }}
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row mb-2">
-                    <div class="col-lg-12">
-                        <div class="custom-file">
-                            <img width="100" height="100"
-                                     src="{% if selected_product.image %} {{ selected_product.image.url }} {% else %} {% static 'vendor/img/users/default_avatar.jpg' %}  {% endif %}"
-                                     class="img-thumbnail">
-                            {{ form.image }}
 
-                        </div>
-                    </div>
                 </div>
                 <div class="form-row">
                     <div class="col-lg-12" style="margin-top: 33px;">
@@ -62,8 +31,8 @@
             </form>
             <div class="row">
                 <div class="col-lg-12" style="margin-top: 33px;">
-                    <form action="{% url 'admins:product_delete' selected_product.id %}"
-                          class="btn btn-danger btn-block">
+                    <form action="{% url 'admins:category_product_delete' productcategory.id %}"
+                          class="btn btn-danger btn-block" method="post">
                         {% csrf_token %}
                         <input class="btn btn-danger btn-block" type="submit" value="Удалить">
                     </form>

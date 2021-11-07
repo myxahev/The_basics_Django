@@ -5,6 +5,10 @@ from django.contrib import auth
 from django.contrib import messages
 from baskets.models import Basket
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from admins.views import UserCreateView
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 
 
 def login(request):
@@ -25,24 +29,10 @@ def login(request):
     return render(request, 'users/login.html', context)
 
 
-def registration(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегестрировались!')
-            return HttpResponseRedirect(reverse('users:login'))
-        else:
-            print(form.errors)
-    else:
-        form = UserRegistrationForm()
-    context = {'title': 'GeekShop - Регистрация', 'form': form}
-    return render(request, 'users/registration.html', context)
-
-
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
+
 
 @login_required
 def profile(request):
@@ -63,3 +53,33 @@ def profile(request):
     }
 
     return render(request, 'users/profile.html', context)
+
+
+# Create Class
+class UserRegistrationView(UserCreateView):
+    success_url = reverse_lazy('users:login')
+    template_name = 'users/registration.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(UserCreateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Регистрация'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: not u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserCreateView, self).dispatch(request, *args, **kwargs)
+
+
+# def registration(request):
+#     if request.method == 'POST':
+#         form = UserRegistrationForm(data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Вы успешно зарегестрировались!')
+#             return HttpResponseRedirect(reverse('users:login'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = UserRegistrationForm()
+#     context = {'title': 'GeekShop - Регистрация', 'form': form}
+#     return render(request, 'users/registration.html', context)
