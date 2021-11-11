@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'baskets.context_processors.baskets',
             ],
         },
     },
@@ -135,3 +136,24 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = '/users/login/'
+
+DOMAIN_NAME = 'http://localhost:8000'
+
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = '25'
+# EMAIL_HOST_USER = 'django@geekshop.local'
+# EMAIL_HOST_PASSWORD = 'geekshop'
+EMAIL_USE_SSL = False
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '3f41c4f06626d8'
+EMAIL_HOST_PASSWORD = '632cbf7067094d'
+EMAIL_PORT = '2525'
+
+#1 Вариант с локальным почтовым сервером
+# python -m smtpd -n -c DebuggingServer localhost:25
+# EMAIL_HOST_USER, EMAIL_HOST_PASSWORD = None, None
+
+#2 Вариант логирования сообщений почты в в иде файлов вместо отпрваки
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = 'tmp/email-messages'
