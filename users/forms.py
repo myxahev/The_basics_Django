@@ -4,7 +4,9 @@ import random
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 
-from users.models import User
+from users.models import User, UserProfile
+
+
 # import datetime
 
 
@@ -72,6 +74,7 @@ class UserRegistrationForm(UserCreationForm):
 
         return user
 
+
 class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
@@ -84,3 +87,24 @@ class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'image', 'middle_name', 'age')
+
+
+class UserProfileEditForm(forms.ModelForm):
+    tagline = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    about_me = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    gender = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+
+    class Meta:
+        model = UserProfile
+        fields = ('tagline', 'about_me', 'gender')
+
+
+# class UserProfileEditForm(forms.ModelForm):
+#     class Meta:
+#         model = UserProfile
+#         fields = ('tagline', 'about_me', 'gender')
+#
+#     def __init__(self, *args, **kwargs):
+#         super(UserProfileEditForm, self).__init__(*args, **kwargs)
+#         for field_name, field in self.fields.items():
+#             field.widget.attrs['class'] = 'form-control py-4'
