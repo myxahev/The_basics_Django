@@ -7,7 +7,8 @@ from django.contrib import auth
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from users.models import User
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
+from django.db import transaction
 
 
 # from baskets.models import Basket
@@ -41,20 +42,24 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-
+@transaction.atomic
 @login_required
 def profile(request):
     user = request.user
+    user_profile = request.user.userprofile
     if request.method == 'POST':
-        form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
+        form_user = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
+        form_user_profile = UserProfileEditForm(instance=user_profile, files=request.FILES, data=request.POST)
+        if form_user.is_valid() and form_user_profile.is_valid():
+            form_user.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
-        form = UserProfileForm(instance=user)
+        form_user = UserProfileForm(instance=user)
+        form_user_profile = UserProfileEditForm(instance=user.userprofile)
     context = {
         'title': 'GeekShop - Профиль',
-        'form': form,
+        'form': form_user,
+        'form_user_profile': form_user_profile,
         # 'baskets': Basket.objects.filter(user=user),
         # 'total_quantity': sum(basket.quantity for basket in baskets),
         # 'total_sum': sum(basket.sum() for basket in baskets),
@@ -85,12 +90,13 @@ def registration(request):
 
 
 def verify(request, email, activation_key):
+
     try:
         user = User.objects.get(email=email)
         if user.activation_key == activation_key and not user.is_activation_key_expired():
             user.is_active = True
             user.save()
-            auth.login(request, user)
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return render(request, 'users/verify.html')
         else:
             print(f'error activation user: {user}')
