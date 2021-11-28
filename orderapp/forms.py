@@ -11,6 +11,8 @@ from orderapp.models import Order
 #         model = Order
 #         exclude = ('user',)
 #         fields = ('tagline', 'about_me', 'gender')
+from products.models import Product
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -34,3 +36,5 @@ class OrderItemForm(forms.ModelForm):
         super(OrderItemForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control py-4'
+
+        self.fields['product'].queryset = Product.objects.filter(quantity__gte=1)

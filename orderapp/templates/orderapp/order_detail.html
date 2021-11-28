@@ -1,6 +1,6 @@
 {% extends 'products/base.html' %}
 {% load static %}
-
+{% load my_tags %}
 {% block css %}
 <link href="{% static 'css/profile.css' %}" rel="stylesheet">
 {% endblock %}
@@ -9,11 +9,11 @@
 
 {% block content %}
 <div class="container">
-    {% include 'orderapp/includes/inc_order_summary.html' %}
+    {% include 'ordersapp/includes/inc_order_summary.html' %}
 </div>
-<div class="container">
+<div class="basket_list container">
     {% for item in object.orderitems.select_related %}
-    <div class="container">
+    <div class="basket_record container">
         <img width="100" height="100" src="{{ item.product.image|media_folder_products }}"
              alt="{{ item.product.short_desc }}">
         <span class="category_name">
