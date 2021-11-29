@@ -1,7 +1,12 @@
+import hashlib
+import random
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 
-from users.models import User
+from users.models import User, UserProfile
+
+
 # import datetime
 
 
@@ -46,6 +51,29 @@ class UserRegistrationForm(UserCreationForm):
 
         return data
 
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        if User.objects.filter(email=data).exists():
+            raise forms.ValidationError(f'Пользователь с почтой {data} уже существует.')
+
+        return data
+
+    # if User.objects.filter(email=form.email).exists():
+    #     print('Пользователь с данным email уже используется')
+    #     messages.success(request, f'Пользователь с {form.email} уже существует.')
+
+    #     return HttpResponseRedirect(reverse('users:login'))
+
+    def save(self, **kwargs):
+        user = super(UserRegistrationForm, self).save()
+
+        user.is_active = False
+        salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:6]
+        user.activation_key = hashlib.sha1((user.email + salt).encode('utf8')).hexdigest()
+        user.save()
+
+        return user
+
 
 class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
@@ -59,3 +87,24 @@ class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'image', 'middle_name', 'age')
+
+
+class UserProfileEditForm(forms.ModelForm):
+    tagline = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    about_me = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    gender = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+
+    class Meta:
+        model = UserProfile
+        fields = ('tagline', 'about_me', 'gender')
+
+
+# class UserProfileEditForm(forms.ModelForm):
+#     class Meta:
+#         model = UserProfile
+#         fields = ('tagline', 'about_me', 'gender')
+#
+#     def __init__(self, *args, **kwargs):
+#         super(UserProfileEditForm, self).__init__(*args, **kwargs)
+#         for field_name, field in self.fields.items():
+#             field.widget.attrs['class'] = 'form-control py-4'
