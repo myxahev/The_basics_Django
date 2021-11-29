@@ -1,4 +1,4 @@
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -6,6 +6,10 @@ from django.http import JsonResponse
 from products.models import Product
 from baskets.models import Basket
 
+@login_required
+def index(request):
+    context = {'title': 'Корзина'}
+    return render(request, 'baskets/main_basket.html', context)
 
 @login_required
 def basket_add(request, product_id):

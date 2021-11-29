@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 # from django.urls import reverse
+from orderapp.models import Order
 from users.models import User
 from products.models import Product, ProductCategory
 from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
@@ -110,6 +111,21 @@ class ProductCategoryListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ProductCategoryListView, self).get_context_data(**kwargs)
         context['title'] = 'Админ-панель - Категории'
+        return context
+
+
+# Read Class
+class OrderListView(ListView):
+    model = Order
+    template_name = 'admins/admin-orders-read.html'
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(OrderListView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderListView, self).get_context_data(**kwargs)
+        context['title'] = 'Админ-панель - Заказы'
         return context
 
 
