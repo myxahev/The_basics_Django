@@ -24,8 +24,8 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
-#DEBUG = False
+
+DEBUG = False
 
 #ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['194.58.119.246', 'localhost', '127.0.0.1']
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'geekshop.urls'
@@ -92,15 +94,15 @@ WSGI_APPLICATION = 'geekshop.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': BASE_DIR / 'db.sqlite3',
-     }
-#    'default': {
-#        'NAME': 'geekshop',
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'USER': 'postgres',
-#     }
+     # 'default': {
+     #     'ENGINE': 'django.db.backends.sqlite3',
+     #     'NAME': BASE_DIR / 'db.sqlite3',
+     # }
+   'default': {
+       'NAME': 'geekshop',
+       'ENGINE': 'django.db.backends.postgresql',
+       'USER': 'postgres',
+    }
 }
 
 #DATABASES = {
@@ -149,12 +151,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-#STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (BASE_DIR / 'static',)
+#STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # STATICFILES_FINDERS = (
 #     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -248,3 +250,17 @@ if DEBUG:
         'debug_toolbar.panels.profiling.ProfilingPanel',
         'template_profiler_panel.panels.template.TemplateProfilerPanel',
     ]
+
+if os.name == 'posix':
+    CACHE_MIDDLEWARE_ALIAS = 'default'
+    CACHE_MIDDLEWARE_SECONDS = 10
+    CACHE_MIDDLEWARE_KEY_PREFIX = 'geekshop'
+
+    CACHE = {
+        'default': {
+            'BACKEND': 'django.core.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+        }
+    }
+
+LOW_CACHE = True
