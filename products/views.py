@@ -6,7 +6,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.core.cache import cache
 from django.views.decorators.cache import never_cache, cache_page
-
+from django.db import connection
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # module_dir = os.path.dirname(__file__)
 
@@ -111,3 +113,21 @@ def products(request, category_id=None, page=1):
 
     # file_path = os.path.join(module_dir, 'fixtures/products.json')
     # context['products'] = json.load(open(file_path, encoding='utf-8'))
+
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}: ')
+    [print(query['sql']) for query in update_queries]
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        instance.product_set.update(is_active=instance.is_active)  # упростили код
+
+        # if instance.is_active:
+        #     instance.product_set.update(is_active=True)
+        # else:
+        #     instance.product_set.update(is_active=False)
+
+        db_profile_by_type(sender, 'UPDATE', connection.queries)
